@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="fangkuai_2">#eee4da</color>
+    <color name="fangkuai_4">#ece0c8</color>
+    <color name="fangkuai_8">#f2b179</color>
+    <color name="fangkuai_16">#f59563</color>
+    <color name="fangkuai_32">#f67a5e</color>
+    <color name="fangkuai_64">#f65d3b</color>
+    <color name="fangkuai_128">#edce71</color>
+    <color name="fangkuai_256">#edcc61</color>
+    <color name="fangkuai_512">#ecc850</color>
+    <color name="fangkuai_1024">#edc53f</color>
+    <color name="fangkuai_2048">#eec22e</color>
+    <color name="fangkuai_b">#ccc0b2</color>
+    
+    <color name="shuzi_24">#7c7268</color>
+    <color name="white">#FFFFFF</color>
+    
+    <color name="huabu">#bbada0</color>
+    
+    <color name="beijing">#fbf8ef</color>
+    
+    
+</resources>
