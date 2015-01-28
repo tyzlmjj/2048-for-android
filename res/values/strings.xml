@@ -4,5 +4,9 @@
     <string name="app_name">2048</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="restare">重新开始</string>
+    <string name="jia">加</string>
+    <string name="jian">减</string>
+    <string name="defeng">得 分</string>
 
 </resources>

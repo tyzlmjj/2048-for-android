@@ -20,5 +20,7 @@
     
     <color name="beijing">#fbf8ef</color>
     
+    <color name="restart">#ff7e00</color>
+    <color name="defeng">#efe7de</color>
     
 </resources>

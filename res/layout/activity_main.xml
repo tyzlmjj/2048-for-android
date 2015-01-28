@@ -3,16 +3,118 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/beijing" >
+	
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="@color/shuzi_24"
+            android:textSize="60sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:typeface="monospace" />
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_weight="0.5"
+            android:background="@drawable/fengshu" >
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/fenshu"
+                android:layout_centerHorizontal="true"
+                android:textSize="15sp"
+                android:text="@string/defeng"
+                android:textColor="@color/defeng" />
+
+            <TextView
+                android:id="@+id/fenshu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="5dp"
+                android:text="0"
+                android:textColor="@color/white"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                android:typeface="monospace" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/restart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/huabu"
+        android:layout_alignLeft="@id/huabu"
+        android:background="@null"
+        android:gravity="left|bottom"
+        android:text="@string/restare"
+        android:textColor="@color/restart"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <RelativeLayout
         android:id="@+id/huabu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:background="@drawable/huabu"
-        >
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/jia"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/huabu" >
     </RelativeLayout>
 
-   
+    <Button
+        android:id="@+id/jia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/jian"
+        android:layout_alignBottom="@+id/jian"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="30dp"
+        android:background="@null"
+        android:text="@string/jia"
+        android:textColor="@color/shuzi_24"
+        android:textSize="35sp" />
+
+    <TextView
+        android:id="@+id/sudu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/jian"
+        android:layout_centerHorizontal="true"
+        android:text="7"
+        android:textStyle="bold"
+        android:typeface="monospace"
+        android:textColor="@color/restart"
+        android:textSize="40sp" />
+
+    <Button
+        android:id="@+id/jian"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="30dp"
+        android:background="@null"
+        android:text="@string/jian"
+        android:textColor="@color/shuzi_24"
+        android:textSize="35sp" />
+
+    
 
 </RelativeLayout>
