@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
+import com.mjj.data.Const;
+import com.mjj.data.util;
 import com.mjj.main.R.id;
+import com.mjj.model.Fangkuai_Y;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -14,9 +16,6 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
-import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,6 +28,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,10 +42,24 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 	private Button restart;
 	//速度加减按钮
 	private Button jia,jian;
+	//设置按钮
+	private Button shezhi;
+	//设置框按钮
+	private Button moshi_5x5jd;
+	//设置框按钮
+	private Button moshi_4x4jd;
+	//i按钮
+	private Button main_i;
+	//确定框按钮yes
+	private Button btn_yes;
+	//确定框按钮no
+	private Button btn_no;
 	//速度数值
 	private TextView sd;
 	//分数
 	private TextView fenshu;
+	//最高分数
+	private TextView zuigaofen;
 	//屏幕宽度
 	private int width;
 	//屏幕高度
@@ -52,31 +68,28 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 	private int fwidth,fmargin; 
 	//游戏画布
 	private RelativeLayout huabu;
+	//重置选项框
+	private RelativeLayout restart_background;
+	//设置选项框
+	private LinearLayout shezhi_background;
+	//i框
+	private LinearLayout main_i_background;
 	//创建布局使用
 	private RelativeLayout.LayoutParams rp;
-	//方块背景
-	private int[] fdrawable={R.drawable.fangkuai_2,R.drawable.fangkuai_4,
-								R.drawable.fangkuai_8,R.drawable.fangkuai_16,
-								R.drawable.fangkuai_32,R.drawable.fangkuai_64,
-								R.drawable.fangkuai_128,R.drawable.fangkuai_256,
-								R.drawable.fangkuai_512,R.drawable.fangkuai_1024,
-								R.drawable.fangkuai_2048};
-	//数字大小
-	private int[] textsize={40,30,25,20};
 	@SuppressLint("UseSparseArrays")
 	//样式
 	private Map<Integer,Integer> map_drawable =new HashMap<Integer, Integer>();
 	//即将隐藏的方块
-	private List<Integer> fn= new ArrayList<Integer>();
+	private List<Integer> fn;
 	//即将移动且变大的方块
-	private List<Integer> fm= new ArrayList<Integer>();
+	private List<Integer> fm;
 	//隐藏的方块
-	private List<Integer> fnList= new ArrayList<Integer>();
+	private List<Integer> fnList;
 	//空格子
-	private List<Integer> konggezi=new ArrayList<Integer>();
+	private List<Integer> konggezi;
 	//格子对应方块
 	@SuppressLint("UseSparseArrays")
-	private Map<Integer,Fangkuai_Y> map=new HashMap<Integer, Fangkuai_Y>();
+	private Map<Integer,Fangkuai_Y> map;
 	//判断手势
 	private float x_tmp1,y_tmp1,x_tmp2,y_tmp2;
 	//手势滑动结束判断
@@ -85,14 +98,16 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 	private AnimatorSet anim=new AnimatorSet();
 	//缩放动画
 	private AnimatorSet anim2=new AnimatorSet();
-	//得分缩放动画
-	private ObjectAnimator f1,f2,f3,f4;
 	//动画结束判断
 	private boolean panduan=false;
 	//滑动速度
 	private int sudu=1;
 	//按返回键间隔
 	private long exitTime = 0;
+	//判断是否有设置框打开
+	private boolean panduan_shezhi=false;
+	//判断游戏框布局4x4或5x5
+	private int daxiao=5;
 	
 	
 	@Override
@@ -107,12 +122,13 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 		//初始化事件
 		initEvent();
 		//画布创建
-		huabuCreat();
+		bujuOnCreat();
+		//格子创建
+		geziCreat(daxiao);
 		//创建数字方块
-		fangkuaionCreat();
-		//开始显示2个格子
-		suiji(2);
-		
+		fangkuaionCreat(daxiao);
+		//开始重置
+		restart(daxiao);
 		
 		
 	}
@@ -122,10 +138,19 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 	 */
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		 if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {  
+		
+		 //保存最高分
+		 util.saveZuigaofen(this, Integer.parseInt(zuigaofen.getText().toString()), Const.FILE_NAME[daxiao-4]);
+		 if(panduan_shezhi){
+			 shezhi_background.setVisibility(View.GONE);
+			 restart_background.setVisibility(View.GONE);
+			 main_i_background.setVisibility(View.GONE);
+			 panduan_shezhi=false;
+			 return true; 
+		 }else if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {  
 	  
 	            if ((System.currentTimeMillis() - exitTime) > 2000) {  
-	                Toast.makeText(getApplicationContext(), "再按一次退出程序",  
+	                Toast.makeText(getApplicationContext(), "再按一次退出2048",  
 	                        Toast.LENGTH_SHORT).show();  
 	                exitTime = System.currentTimeMillis();  
 	            } else {  
@@ -153,29 +178,30 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 	 * 初始化事件
 	 */
 	private void initEvent() {
-		//方块边长
-		fwidth=(width-width/20)*2/9;
-		//间距
-		fmargin=(width-width/20)/9/5;
 		//游戏框滑动监听
 		huabu.setOnTouchListener(this);
 		//重置按钮点击事件监听
 		restart.setOnClickListener(this);
+		//确定框按钮yes
+		btn_yes.setOnClickListener(this);
+		//确定框按钮no
+		btn_no.setOnClickListener(this);
 		//速度改变按钮监听
 		jia.setOnClickListener(this);
 		jian.setOnClickListener(this);
-		
+		//设置按钮监听
+		shezhi.setOnClickListener(this);
+		//设置框按钮监听
+		moshi_5x5jd.setOnClickListener(this);
+		//设置框按钮监听
+		moshi_4x4jd.setOnClickListener(this);
+		//i按钮监听
+		main_i.setOnClickListener(this);
 		//速度初始
 		sudu=Integer.parseInt(sd.getText().toString());
-		
-		f1=ObjectAnimator.ofFloat(fenshu, "scaleX",1f,1.2f );
-		f2=ObjectAnimator.ofFloat(fenshu, "scaleY",1f,1.2f );
-		f3=ObjectAnimator.ofFloat(fenshu, "scaleX",1.2f,1f );
-		f4=ObjectAnimator.ofFloat(fenshu, "scaleY",1.2f,1f );
-		
 		//方块背景对应
-		for(int i=0,n=2;i<11;i++,n*=2){
-			map_drawable.put(n, fdrawable[i]);
+		for(int i=0,n=2;i<17;i++,n*=2){
+			map_drawable.put(n, Const.fdrawable[i]);
 		}
 	}
 	
@@ -183,168 +209,221 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 	 * 导入控件
 	 */
 	private void initView() {
-		
+		wh(daxiao);
 		//游戏框
 		huabu=(RelativeLayout) findViewById(id.huabu);
+		//重置选项框
+		restart_background=(RelativeLayout)findViewById(R.id.restart_background);
+		//设置选项框
+		shezhi_background=(LinearLayout) findViewById(R.id.shezhi_background);
+		//i选项框
+		main_i_background=(LinearLayout) findViewById(R.id.main_i_background);
 		//重置按钮
 		restart=(Button) findViewById(id.restart);
+		//确定框按钮yes
+		btn_yes=(Button) findViewById(id.btn_restart_yes);
+		//确定框按钮no
+		btn_no=(Button) findViewById(id.btn_restart_no);
 		//速度加减按钮
 		jia=(Button)findViewById(R.id.jia);
 		jian=(Button)findViewById(R.id.jian);
+		//设置按钮
+		shezhi=(Button) findViewById(R.id.btn_shezhi);
+		//设置框按钮
+		moshi_4x4jd=(Button) findViewById(R.id.moshi_4x4jd);
+		//设置框按钮
+		moshi_5x5jd=(Button) findViewById(R.id.moshi_5x5jd);
+		//i按钮
+		main_i=(Button) findViewById(R.id.main_i);
 		//速度数字
 		sd=(TextView) findViewById(id.sudu);
 		//分数数字
 		fenshu=(TextView) findViewById(id.fenshu);
+		//最高分数字
+		zuigaofen=(TextView) findViewById(id.zuigaofen);
 	}
-	
+	/*
+	 * 边长和边距确定
+	 */
+	private void wh(int daxiao){
+		if(daxiao==4){
+			//方块边长
+			fwidth=(width-width/20)*2/9;
+			//间距
+			fmargin=(width-width/20)/9/5;
+		}else{
+			//方块边长
+			fwidth=(width-width/20)*2/9*4/5;
+			//间距
+			fmargin=(width-width/20)/9/6;
+		}
+	}
 	/*
 	 * 重置
 	 */
-	private void restart(){
-		
-		Builder bd = new AlertDialog.Builder(MainActivity.this);
-		bd.setTitle("重新开始");
-		bd.setMessage("你确定要重新开始吗？");
-		bd.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				
-				//得分清零
-				fenshu.setText(0+"");
-				//格子与方块对应清除
-				map=new HashMap<Integer, Fangkuai_Y>();
-				
-				fn=new ArrayList<Integer>();
-				fm=new ArrayList<Integer>();
-				//未显示的格子id清除
-				fnList =new ArrayList<Integer>();
-				//空格子重置为16个
-				konggezi=new ArrayList<Integer>();
-				for(int i=1;i<=16;i++){
-					if(i<=4){
-						konggezi.add(10+i);
-					}else if(i<=8){
-						konggezi.add(20+i-4);
-					}else if(i<=12){
-						konggezi.add(30+i-8);
-					}else{
-						konggezi.add(40+i-12);
-					}
-					//导入未显示集合
-					fnList.add(100+i);
-					
-					//方块样式
-					TextView tx = (TextView) findViewById(100+i);
-					if(i<=8){
-						//数字
-						tx.setText("2");
-						//背景样式
-						tx.setBackgroundResource(fdrawable[0]);
-					}
-					else{
-						//数字
-						tx.setText("4");
-						//背景样式
-						tx.setBackgroundResource(fdrawable[1]);
-					}
-					//数字颜色
-					tx.setTextColor(0xff7c7268);
-					//数字大小
-					tx.setTextSize(textsize[0]);
-					//隐藏
-					tx.setVisibility(View.INVISIBLE);
-				}
-				//开始显示2个格子
-				suiji(2);
+	private void restart(int daxiao){
+		//最高分读取
+		zuigaofen.setText(util.loadzuigaofen(this, Const.FILE_NAME[daxiao-4]));
+		//边长，边距
+		wh(daxiao);
+		for(int i=1;i<=5;i++){
+			for(int j=1;j<=5;j++){
+				TextView t=(TextView) findViewById(i*10+j);
+				t.setVisibility(View.GONE);
 			}
-		});
-		bd.setNegativeButton("取消", null);
-		bd.show();
+		}
+		//格子重置
+		geziCreat(daxiao);
+		//得分清零
+		fenshu.setText(0+"");
+		//格子与方块对应清除
+		map=new HashMap<Integer, Fangkuai_Y>();
 		
+		fn=new ArrayList<Integer>();
+		fm=new ArrayList<Integer>();
+		//未显示的格子id清除
+		fnList =new ArrayList<Integer>();
+		//空格子重置为16个或25个
+		konggezi=new ArrayList<Integer>();
+		for(int i=1;i<=daxiao*daxiao;i++){
+			if(i<=daxiao){
+				konggezi.add(10+i);
+			}else if(i<=daxiao*2){
+				konggezi.add(20+i-daxiao);
+			}else if(i<=daxiao*3){
+				konggezi.add(30+i-daxiao*2);
+			}else if(daxiao==4){
+				konggezi.add(40+i-daxiao*3);
+			}else if(i<=daxiao*4){
+				konggezi.add(40+i-daxiao*3);
+			}else{
+				konggezi.add(50+i-daxiao*4);
+			}
+			//导入未显示集合
+			fnList.add(100+i);
+		}
+		//25个方块隐藏
+		for(int i=1;i<=25;i++){
+			//方块实例
+			TextView tx = (TextView) findViewById(100+i);
+			if(i<=8||i>20){
+				//数字
+				tx.setText("2");
+				//背景样式
+				tx.setBackgroundResource(Const.fdrawable[0]);
+			}
+			else{
+				//数字
+				tx.setText("4");
+				//背景样式
+				tx.setBackgroundResource(Const.fdrawable[1]);
+			}
+			//相对布局参数 宽高
+			rp = new RelativeLayout.LayoutParams(fwidth,fwidth);
+			//设置相对布局位置
+			rp.addRule(RelativeLayout.ALIGN_LEFT,11);
+			rp.addRule(RelativeLayout.ALIGN_BOTTOM,11);
+			
+			tx.setLayoutParams(rp);
+			//数字颜色
+			tx.setTextColor(0xff7c7268);
+			//数字大小
+			tx.setTextSize(Const.textsize[daxiao-4][0]);
+			
+			//隐藏
+			tx.setVisibility(View.INVISIBLE);
+		}
+		//开始显示2个格子
+		suiji(2);
 	}
 	/*
-	 * 画布创建
+	 * 创建25个空格子,控制布局大小
 	 */
-	@SuppressLint("NewApi")
-	private void huabuCreat() {
-		
+	private void bujuOnCreat(){
 		//游戏框大小设定
 		RelativeLayout.LayoutParams linearParams =  (RelativeLayout.LayoutParams)huabu.getLayoutParams();
 	 	linearParams.height = width-width/20;
 	 	linearParams.width = width-width/20;
-        huabu.setLayoutParams(linearParams);
-        
-	    //空格子绘制  
-		for(int i=1;i<=16;i++){
-			TextView tx = new TextView(this);
-			
+	    huabu.setLayoutParams(linearParams);
+	    //确定框大小设置
+	    FrameLayout.LayoutParams params=(LayoutParams) restart_background.getLayoutParams();
+	    params.height=width-width/20;
+	    params.width = width-width/20;
+	    restart_background.setBackgroundColor(0xaaffffff);
+	    restart_background.setLayoutParams(params);
+	   //设置框大小设置
+	    FrameLayout.LayoutParams params1=(LayoutParams) shezhi_background.getLayoutParams();
+	    params1.height=width-width/20;
+	    params1.width = width-width/20;
+	    shezhi_background.setBackgroundColor(0xaaffffff);
+	    shezhi_background.setLayoutParams(params1);
+	  //i框大小设置
+	    FrameLayout.LayoutParams params2=(LayoutParams) main_i_background.getLayoutParams();
+	    params2.height=width-width/20;
+	    params2.width = width-width/20;
+	    main_i_background.setBackgroundColor(0xaaffffff);
+	    main_i_background.setLayoutParams(params2);
+	    
+		for(int i=1;i<=25;i++){
+			TextView tx=new TextView(this);
 			// id与空格子List初始化
-			if(i<=4){
+			if(i<=5){
 				tx.setId(10+i);
-				konggezi.add(10+i);
-			}else if(i<=8){
-				tx.setId(20+i-4);
-				konggezi.add(20+i-4);
-			}else if(i<=12){
-				tx.setId(30+i-8);
-				konggezi.add(30+i-8);
+			}else if(i<=10){
+				tx.setId(20+i-5);
+			}else if(i<=15){
+				tx.setId(30+i-10);
+			}else if(i<=20){
+				tx.setId(40+i-15);
 			}else{
-				tx.setId(40+i-12);
-				konggezi.add(40+i-12);
+				tx.setId(50+i-20);
 			}
-			
-			//背景样式
-			tx.setBackgroundResource(R.drawable.fangkuai_b);
-			
-			//相对布局参数 宽高
-			rp = new RelativeLayout.LayoutParams(fwidth,fwidth);
-			
-			//设置外边距
-			if(i==1||i==5||i==9||i==13){
-				rp.setMargins(fmargin,fmargin, 0, 0);
-			}
-			else if(i%4==0 && i!=16){
-				rp.setMargins(fmargin,0,fmargin, 0);
-			}
-			else if(i<12){
-				rp.setMargins(fmargin,0, 0, 0);
-			}
-			else if(i==16){
-				rp.setMargins(fmargin,0, fmargin, fmargin);
-			}
-			else{
-				rp.setMargins(fmargin,0, 0, fmargin);
-			}
-			
-			//设置相对布局位置
-			if(i==1){
-				
-			}else if(i==5){
-				rp.addRule(RelativeLayout.BELOW,11);
-			}else if(i==9){
-				rp.addRule(RelativeLayout.BELOW,21);
-			}else if(i==13){
-				rp.addRule(RelativeLayout.BELOW,31);
-			}else if(i<=4){
-				rp.addRule(RelativeLayout.RIGHT_OF, 9+i);
-				rp.addRule(RelativeLayout.ALIGN_TOP, 9+i);
-			}else if(i<=8){
-				rp.addRule(RelativeLayout.RIGHT_OF, 15+i);
-				rp.addRule(RelativeLayout.ALIGN_TOP, 15+i);
-			}
-			else if(i<=12){
-				rp.addRule(RelativeLayout.RIGHT_OF, 21+i);
-				rp.addRule(RelativeLayout.ALIGN_TOP, 21+i);
-			}
-			else{
-				rp.addRule(RelativeLayout.RIGHT_OF, 27+i);
-				rp.addRule(RelativeLayout.ALIGN_TOP, 27+i);
-			}
-			tx.setText("");
-			tx.setLayoutParams(rp);
+			tx.setVisibility(View.GONE);
 			huabu.addView(tx);
 		}
+		
+	}
+	
+	/*
+	 * 格子创建
+	 */
+	@SuppressLint({ "NewApi", "ResourceAsColor" })
+	private void geziCreat(int daxiao) {
+		//行
+        for(int i=1;i<=daxiao;i++){
+        	//列
+        	for(int j=1;j<=daxiao;j++){
+        		TextView text=(TextView) findViewById(i*10+j);
+        		//相对布局参数 宽高
+    			rp = new RelativeLayout.LayoutParams(fwidth,fwidth);
+            	
+    			//设置外边距
+            	if(i==daxiao&&j==1){
+            		rp.setMargins(fmargin, fmargin, 0,fmargin);
+            	}else if(j==1){
+            		rp.setMargins(fmargin, fmargin, 0, 0);
+            	}else if(j!=daxiao){
+            		rp.setMargins(fmargin, 0, 0, 0);
+            	}else {
+            		rp.setMargins(fmargin, 0,fmargin, 0);
+            	}
+            	
+            	//设置相对布局位置
+            	if(j==1&&i!=1){
+            		rp.addRule(RelativeLayout.BELOW,i*10-10+j);
+            	}else{
+            		rp.addRule(RelativeLayout.RIGHT_OF, i*10+j-1);
+    				rp.addRule(RelativeLayout.ALIGN_TOP,i*10+j-1);
+            	}
+            	//背景样式
+    			text.setBackgroundResource(R.drawable.fangkuai_b);
+    			text.setText("");
+            	text.setLayoutParams(rp);
+            	text.setVisibility(View.VISIBLE);
+            }
+        }
+        
+        
 		
 	}
 	
@@ -352,31 +431,31 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 	 * 数字方块创建
 	 */
 	@SuppressLint({ "NewApi", "ResourceAsColor" })
-	private void fangkuaionCreat(){
+	private void fangkuaionCreat(int daxiao){
 		
-		for(int i=1;i<=16;i++){
+		for(int i=1;i<=25;i++){
 			TextView tx = new TextView(this);
 			
 			//id
 			tx.setId(100+i);
-			if(i<=8){
+			if(i<=8||i>20){
 				//数字
 				tx.setText("2");
 				//背景样式
-				tx.setBackgroundResource(fdrawable[0]);
+				tx.setBackgroundResource(Const.fdrawable[0]);
 			}
 			else{
 				//数字
 				tx.setText("4");
 				//背景样式
-				tx.setBackgroundResource(fdrawable[1]);
+				tx.setBackgroundResource(Const.fdrawable[1]);
 			}
 			//数字颜色
 			tx.setTextColor(0xff7c7268);
 			//数字居中
 			tx.setGravity(Gravity.CENTER);
 			//数字大小
-			tx.setTextSize(textsize[0]);
+			tx.setTextSize(Const.textsize[daxiao-4][0]);
 			//字体样式
 			Typeface face = Typeface.MONOSPACE;
 			tx.setTypeface(face);
@@ -386,6 +465,7 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 			
 			//相对布局参数 宽高
 			rp = new RelativeLayout.LayoutParams(fwidth,fwidth);
+			
 			//设置相对布局位置
 			rp.addRule(RelativeLayout.ALIGN_LEFT,11);
 			rp.addRule(RelativeLayout.ALIGN_BOTTOM,11);
@@ -396,9 +476,7 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 			tx.setVisibility(View.INVISIBLE);
 			
 			huabu.addView(tx);
-			
-			//导入未显示集合
-			fnList.add(100+i);
+
 		}
 	}
 	/*
@@ -412,7 +490,7 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 				int g=(int)(Math.random() * konggezi.size());
 				int f=(int)(Math.random() * fnList.size());
 				
-				//获得格子号码和方块ID
+				//获得格子id和方块ID
 				int gezi=konggezi.get(g);
 				final int fid=fnList.get(f);
 				
@@ -460,53 +538,72 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
-		//获取当前坐标  
-        float x = event.getX();  
-        float y = event.getY(); 
-		switch(event.getAction()){
-			case  MotionEvent.ACTION_DOWN:
-			 	x_tmp1 = x;  
-                y_tmp1 = y;
-                break;  
-	        case MotionEvent.ACTION_MOVE:  
-                x_tmp2 = x;  
-                y_tmp2 = y;
-                if(Math.abs(x_tmp1 - x_tmp2) > Math.abs(y_tmp1 - y_tmp2)){
-                	if(x_tmp1 - x_tmp2 > 8 ){  
-                    	xy++;
-                    	move("zuo");
-                    }
-                    else if(x_tmp2 - x_tmp1 > 8 ){
-                    	xy++;
-                    	move("you");
-                    }
-                }else{
-	                if(y_tmp1 - y_tmp2 > 8 ){
-	                	xy++;
-	                	move("shang");
+		//判断是否有设置框打开
+		if(!panduan_shezhi){
+			//获取当前坐标  
+	        float x = event.getX();  
+	        float y = event.getY(); 
+			switch(event.getAction()){
+				case  MotionEvent.ACTION_DOWN:
+				 	x_tmp1 = x;  
+	                y_tmp1 = y;
+	                break;  
+		        case MotionEvent.ACTION_MOVE:  
+	                x_tmp2 = x;  
+	                y_tmp2 = y;
+	                if(Math.abs(x_tmp1 - x_tmp2) > Math.abs(y_tmp1 - y_tmp2)){
+	                	if(x_tmp1 - x_tmp2 > 8 ){  
+	                    	xy++;
+	                    	move("zuo");
+	                    }
+	                    else if(x_tmp2 - x_tmp1 > 8 ){
+	                    	xy++;
+	                    	move("you");
+	                    }
+	                }else{
+		                if(y_tmp1 - y_tmp2 > 8 ){
+		                	xy++;
+		                	move("shang");
+		                }
+		                else if(y_tmp2 - y_tmp1 > 8 ){
+		                	xy++;
+		                	move("xia");
+		                }
 	                }
-	                else if(y_tmp2 - y_tmp1 > 8 ){
-	                	xy++;
-	                	move("xia");
-	                }
-                }
-                break;
-	        case MotionEvent.ACTION_UP:
-	        	xy=0;
-	        	break;
+	                break;
+		        case MotionEvent.ACTION_UP:
+		        	xy=0;
+		        	break;
+			}
 		}
+		
 		return true;
 	}
 	@Override
 	public void onClick(View v) {
 		switch(v.getId()){
 			case R.id.restart:
-				restart();
+				if(!panduan_shezhi){
+					restart_background.setVisibility(View.VISIBLE);
+					panduan_shezhi=true;
+				}
+				break;
+			case R.id.btn_restart_yes:
+				restart_background.setVisibility(View.GONE);
+				panduan_shezhi=false;
+				//保存最高分
+				util.saveZuigaofen(this, Integer.parseInt(zuigaofen.getText().toString()), Const.FILE_NAME[daxiao-4]);
+				restart(daxiao);
+				break;
+			case R.id.btn_restart_no:
+				restart_background.setVisibility(View.GONE);
+				panduan_shezhi=false;
 				break;
 			case R.id.jia:
 				int a=Integer.parseInt(sd.getText().toString());
 				if(a<10){
 					sd.setText(a+1+"");
+					fangda(sd);
 					sudu=a+1;
 				}
 				break;
@@ -514,7 +611,38 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 				int b=Integer.parseInt(sd.getText().toString());
 				if(b>1){
 					sd.setText(b-1+"");
+					suoxiao(sd);
 					sudu=b-1;
+				}
+				break;
+			case R.id.btn_shezhi:
+				if(!panduan_shezhi){
+					shezhi_background.setVisibility(View.VISIBLE);
+					panduan_shezhi=true;
+				}
+				break;
+			case R.id.moshi_4x4jd:
+				if(daxiao==5){
+					util.saveZuigaofen(this, Integer.parseInt(zuigaofen.getText().toString()), Const.FILE_NAME[daxiao-4]);
+					daxiao=4;
+					restart(daxiao);
+				}
+				shezhi_background.setVisibility(View.GONE);
+				panduan_shezhi=false;
+				break;
+			case R.id.moshi_5x5jd:
+				if(daxiao==4){
+					util.saveZuigaofen(this, Integer.parseInt(zuigaofen.getText().toString()), Const.FILE_NAME[daxiao-4]);
+					daxiao=5;
+					restart(daxiao);
+				}
+				shezhi_background.setVisibility(View.GONE);
+				panduan_shezhi=false;
+				break;
+			case R.id.main_i:
+				if(!panduan_shezhi){
+					main_i_background.setVisibility(View.VISIBLE);
+					panduan_shezhi=true;
 				}
 				break;
 				
@@ -535,9 +663,9 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 				str="heng";
 			}
 			//行
-			for(int i=1;i<=4;i++){
+			for(int i=1;i<=daxiao;i++){
 				//列
-				for(int j=2;j<=4;j++){
+				for(int j=2;j<=daxiao;j++){
 					//判断第j个格子是否为空
 					if(map.get(zhuanhuan(fangxiang, i, j))!=null){
 						//列之前
@@ -587,11 +715,11 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 		if(fangxiang.equals("zuo")){
 			return i*10+n;
 		}else if(fangxiang.equals("you")){
-			return i*10+(5-n);
+			return i*10+(daxiao+1-n);
 		}else if(fangxiang.equals("shang")){
 			return i+n*10;
 		}else{
-			return i+(50-n*10);
+			return i+((daxiao+1)*10-n*10);
 		}
 		
 	}
@@ -619,12 +747,8 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 			//导入即将移动增大的方块id
 			fm.add(map.get(first).getId());
 			//创建缩放动画
-			ObjectAnimator p1 = ObjectAnimator.ofFloat(findViewById(fy.getId()), "scaleX",1f,1.1f );
-			ObjectAnimator p2 = ObjectAnimator.ofFloat(findViewById(fy.getId()), "scaleY",1f,1.1f );
-			ObjectAnimator p3 = ObjectAnimator.ofFloat(findViewById(fy.getId()), "scaleX",1.1f,1.0f );
-			ObjectAnimator p4 = ObjectAnimator.ofFloat(findViewById(fy.getId()), "scaleY",1.1f,1.0f );
-			anim2.play(p1).with(p2);
-			anim2.play(p3).with(p4).after(p1);
+			fangkuaisuofang((TextView)findViewById(fy.getId()));
+			
 			
 		}
 		
@@ -684,25 +808,25 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 			textn.setVisibility(View.INVISIBLE);
 			//数字颜色
 			textn.setTextColor(0xff7c7268);
-			textn.setTextSize(textsize[0]);
+			textn.setTextSize(Const.textsize[daxiao-4][0]);
 			//还原样式
-			if(id<=108){
+			if(id<=108||id>120){
 				//数字
 				textn.setText("2");
 				//背景样式
-				textn.setBackgroundResource(fdrawable[0]);
+				textn.setBackgroundResource(Const.fdrawable[0]);
 			}
 			else{
 				//数字
 				textn.setText("4");
 				//背景样式
-				textn.setBackgroundResource(fdrawable[1]);
+				textn.setBackgroundResource(Const.fdrawable[1]);
 			}
 			fnList.add(id);
 		}
 		fn.clear();
 		
-		AnimatorSet fen=new AnimatorSet();
+		
 		int defen=0;
 		for(int j:fm){
 			//获取显示方块实例
@@ -716,28 +840,31 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 			//数字居中
 			texty.setGravity(Gravity.CENTER);
 			if(shuzi>=4)texty.setTextColor(0xffffffff);
-			if(shuzi>=8)texty.setTextSize(textsize[1]);
-			if(shuzi>=64)texty.setTextSize(textsize[2]);
-			if(shuzi>=512)texty.setTextSize(textsize[3]);
+			if(shuzi>=8)texty.setTextSize(Const.textsize[daxiao-4][1]);
+			if(shuzi>=64)texty.setTextSize(Const.textsize[daxiao-4][2]);
+			if(shuzi>=512)texty.setTextSize(Const.textsize[daxiao-4][3]);
+			if(shuzi>=8192)texty.setTextSize(Const.textsize[daxiao-4][4]);
+			if(shuzi>=65536)texty.setTextSize(Const.textsize[daxiao-4][5]);
 			//累加得分
 			defen+=shuzi*2;
 		}
 		//加上得分
 		fenshu.setText(defen+Integer.parseInt(fenshu.getText().toString())+"");
+		if(Integer.parseInt(zuigaofen.getText().toString())<Integer.parseInt(fenshu.getText().toString())){
+			zuigaofen.setText(fenshu.getText());
+			fangda(zuigaofen);
+		}
 		//临时集合清楚
 		fm.clear();
 		//缩放动画
-		fen.play(f1).with(f2);
-		fen.play(f3).with(f4).after(f1);
-		fen.setDuration((10-sudu)*10+50);
-		fen.start();
+		fangda(fenshu);
 		anim2.setDuration((10-sudu)*10+50);
 		anim2.start();
 		anim2=new AnimatorSet();
 	}
 
 	/*
-	 * 动画创建
+	 * 移动动画创建
 	 * first 移动到的格子数（1~4）
 	 * n	速度
 	 * 
@@ -752,7 +879,46 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 		}
 		anim.playTogether(p1);
 	}
-
+	
+	/*
+	 * 普通缩放动画创建并执行(放大)
+	 */
+	private void fangda(TextView view){
+		ObjectAnimator f1=ObjectAnimator.ofFloat(view, "scaleX",1f,1.2f );
+		ObjectAnimator f2=ObjectAnimator.ofFloat(view, "scaleY",1f,1.2f );
+		ObjectAnimator f3=ObjectAnimator.ofFloat(view, "scaleX",1.2f,1f );
+		ObjectAnimator f4=ObjectAnimator.ofFloat(view, "scaleY",1.2f,1f );
+		AnimatorSet setf=new AnimatorSet();
+		setf.play(f1).with(f2);
+		setf.play(f3).with(f4).after(f1);
+		setf.setDuration((10-sudu)*10+50);
+		setf.start();
+	}
+	/*
+	 * 普通缩放动画创建并执行(缩小)
+	 */
+	private void suoxiao(TextView view){
+		ObjectAnimator f1=ObjectAnimator.ofFloat(view, "scaleX",1f,0.8f );
+		ObjectAnimator f2=ObjectAnimator.ofFloat(view, "scaleY",1f,0.8f );
+		ObjectAnimator f3=ObjectAnimator.ofFloat(view, "scaleX",0.8f,1f );
+		ObjectAnimator f4=ObjectAnimator.ofFloat(view, "scaleY",0.8f,1f );
+		AnimatorSet setf=new AnimatorSet();
+		setf.play(f1).with(f2);
+		setf.play(f3).with(f4).after(f1);
+		setf.setDuration((10-sudu)*10+50);
+		setf.start();
+	}
+	/*
+	 * 移动方块的缩放动画创建
+	 */
+	private void fangkuaisuofang(TextView view){
+		ObjectAnimator p1 = ObjectAnimator.ofFloat(view, "scaleX",1f,1.15f );
+		ObjectAnimator p2 = ObjectAnimator.ofFloat(view, "scaleY",1f,1.15f );
+		ObjectAnimator p3 = ObjectAnimator.ofFloat(view, "scaleX",1.15f,1.0f );
+		ObjectAnimator p4 = ObjectAnimator.ofFloat(view, "scaleY",1.15f,1.0f );
+		anim2.play(p1).with(p2);
+		anim2.play(p3).with(p4).after(p1);
+	}
 
 	
 	

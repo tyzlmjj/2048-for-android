@@ -20,5 +20,13 @@
         <item name="android:windowNoTitle">true</item>
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
+    
+    <style name="DialogStyle" parent="@android:style/Theme.Dialog">  
+        
+        <item name="android:windowBackground">@color/Dialog_background</item><!--背景透明-->    
+        <item name="android:backgroundDimEnabled">false</item><!--模糊-->    
+         
+             
+    </style> 
 
 </resources>

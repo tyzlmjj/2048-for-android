@@ -11,6 +11,12 @@
     <color name="fangkuai_512">#ecc850</color>
     <color name="fangkuai_1024">#edc53f</color>
     <color name="fangkuai_2048">#eec22e</color>
+    <color name="fangkuai_4096">#eec2ff</color>
+    <color name="fangkuai_8192">#eec2c8</color>
+    <color name="fangkuai_16384">#e5da92</color>
+    <color name="fangkuai_32768">#2ac85c</color>
+    <color name="fangkuai_65536">#2ab55c</color>
+    <color name="fangkuai_131072">#000000</color>
     <color name="fangkuai_b">#ccc0b2</color>
     
     <color name="shuzi_24">#7c7268</color>
@@ -21,6 +27,13 @@
     <color name="beijing">#fbf8ef</color>
     
     <color name="restart">#ff7e00</color>
+    
     <color name="defeng">#efe7de</color>
+    
+    <color name="transparent">@android:color/transparent</color>
+    
+    <color name="Dialog_background">#ffffff</color>
+    
+    <color name="title">#7b6d63</color>
     
 </resources>

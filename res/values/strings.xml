@@ -8,5 +8,15 @@
     <string name="jia">加</string>
     <string name="jian">减</string>
     <string name="defeng">得 分</string>
+    <string name="zuigaofen">最高得分</string>
+    <string name="shezhi">设置</string>
+    <string name="main_i">i</string>
+	<string name="yes">是</string>
+	<string name="no">否</string>
+	<string name="moshi_4x4jd">4x4经典模式</string>
+	<string name="moshi_5x5jd">5x5经典模式</string>
+	<string name="youxiang">邮箱:809402737@qq.com</string>
+	<string name="yuanma">源码：github.com/tyzlmjj/2048-for-android</string>
+
 
 </resources>

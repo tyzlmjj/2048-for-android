@@ -1,0 +1,9 @@
+bin/resources.ap_
+*.apk
+bin/AndroidManifest.xml
+bin/2048-for-android.apk
+bin/2048-for-android.apk
+*.apk
+bin/AndroidManifest.xml
+bin/jarlist.cache
+bin/resources.ap_

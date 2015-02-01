@@ -1,4 +1,4 @@
-package com.mjj.main;
+package com.mjj.model;
 
 public class Fangkuai_Y {
 	private int id;

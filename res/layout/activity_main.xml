@@ -1,33 +1,79 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/beijing" >
-	
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/beijing"
+        >
+	 <RelativeLayout
+	    android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        >
+	     <Button
+	         android:id="@+id/main_i"
+	         android:layout_width="wrap_content"
+	         android:layout_height="wrap_content"
+	         android:layout_alignParentLeft="true"
+	         android:layout_centerVertical="true"
+	         android:textSize="25sp"
+        	 android:textStyle="bold"
+        	 android:typeface="serif"
+        	 android:background="@null"
+        	 android:gravity="left"
+        	 android:textColor="@color/title"
+	         android:text="@string/main_i"
+	          />
+
+	     <Button
+	         android:id="@+id/btn_shezhi"
+	         android:layout_width="wrap_content"
+	         android:layout_height="wrap_content"
+	         android:layout_centerVertical="true"
+	         android:layout_alignParentRight="true"
+	         android:textSize="25sp"
+	         android:gravity="right"
+	         android:background="@null"
+        	 android:textColor="@color/title"
+	         android:text="@string/shezhi"
+	          />
+	    
+    </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="50dp"
         android:gravity="center_vertical"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:layout_below="@+id/title"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" >
 
         <TextView
             android:id="@+id/name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
             android:text="@string/app_name"
             android:textColor="@color/shuzi_24"
-            android:textSize="60sp"
+            android:textSize="43sp"
             android:textStyle="bold"
-            android:layout_marginLeft="20dp"
-            android:typeface="monospace" />
+            android:gravity="left|center_vertical"
+            android:typeface="monospace"
+            />
 
         <RelativeLayout
             android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_weight="0.5"
-            android:background="@drawable/fengshu" >
+            android:layout_height="match_parent"
+            android:layout_weight="1.5"
+            android:background="@drawable/fengshu"
+            android:layout_marginRight="5dp"
+            >
 
             <TextView
                 android:id="@+id/textView1"
@@ -35,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/fenshu"
                 android:layout_centerHorizontal="true"
-                android:textSize="15sp"
+                android:textSize="12sp"
                 android:text="@string/defeng"
                 android:textColor="@color/defeng" />
 
@@ -48,9 +94,41 @@
                 android:layout_marginBottom="5dp"
                 android:text="0"
                 android:textColor="@color/white"
-                android:textSize="25sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 android:typeface="monospace" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.5"
+            android:background="@drawable/fengshu"
+             >
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/zuigaofen"
+                android:layout_centerHorizontal="true"
+                android:textSize="12sp"
+                android:text="@string/zuigaofen"
+                android:textColor="@color/defeng"
+                 />
+
+            <TextView
+                android:id="@+id/zuigaofen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="5dp"
+                android:text="0"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:typeface="monospace" />
+            
+            
         </RelativeLayout>
     </LinearLayout>
 
@@ -65,56 +143,160 @@
         android:text="@string/restare"
         android:textColor="@color/restart"
         android:textSize="20sp"
-        android:textStyle="bold" />
+         />
 
     <RelativeLayout
         android:id="@+id/huabu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/jia"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/huabu" >
+        android:layout_above="@+id/bottom"
+        android:background="@drawable/huabu"
+        android:gravity="center" >
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/jia"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/jian"
-        android:layout_alignBottom="@+id/jian"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="30dp"
-        android:background="@null"
-        android:text="@string/jia"
-        android:textColor="@color/shuzi_24"
-        android:textSize="35sp" />
+    
 
-    <TextView
-        android:id="@+id/sudu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/jian"
-        android:layout_centerHorizontal="true"
-        android:text="7"
-        android:textStyle="bold"
-        android:typeface="monospace"
-        android:textColor="@color/restart"
-        android:textSize="40sp" />
-
-    <Button
+    <LinearLayout
+        android:id="@+id/bottom"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true" >
+        
+     
+	<Button
         android:id="@+id/jian"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginBottom="20dp"
-        android:layout_marginLeft="30dp"
+        android:layout_weight="1"
         android:background="@null"
         android:text="@string/jian"
         android:textColor="@color/shuzi_24"
         android:textSize="35sp" />
+    <TextView
+        android:id="@+id/sudu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="7"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:typeface="monospace"
+        android:textColor="@color/restart"
+        android:textSize="40sp" />
 
     
-
+    <Button
+        android:id="@+id/jia"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@null"
+        android:text="@string/jia"
+        android:textColor="@color/shuzi_24"
+        android:textSize="35sp" />
+    </LinearLayout>
 </RelativeLayout>
+	<RelativeLayout
+	    android:id="@+id/restart_background" 
+	    android:layout_height="320dp"
+	    android:layout_width="320dp"
+	    android:layout_gravity="bottom|center_horizontal"
+	    android:layout_marginBottom="50dp"
+	    android:visibility="gone"
+	    >
+
+		<TextView
+		    android:id="@+id/neirong"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:textColor="@color/shuzi_24"
+		    android:layout_above="@+id/btn_restart_yes"
+		    android:layout_centerHorizontal="true"
+		    android:textSize="35sp"
+		    android:layout_marginBottom="30dp"
+		    android:text="是否要重新开始？" />
+
+		<Button
+		    android:id="@+id/btn_restart_yes"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:textColor="@color/shuzi_24"
+		    android:background="@null"
+		    android:layout_toLeftOf="@+id/textView2"
+		    android:layout_centerVertical="true"
+		    android:textSize="35sp"
+		    android:text="@string/yes"
+		    android:layout_marginRight="30dp" />
+		
+		<TextView
+		    android:id="@+id/textView2"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_centerInParent="true"
+		    android:text="" />
+
+		<Button
+		    android:id="@+id/btn_restart_no"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_toRightOf="@+id/textView2"
+		    android:layout_alignBottom="@+id/btn_restart_yes"
+		    android:background="@null"
+		    android:layout_marginLeft="30dp"
+		    android:textSize="35sp"
+		    android:textColor="@color/shuzi_24"
+		    android:text="@string/no" />
+
+		
+	    
+	</RelativeLayout>
+	<LinearLayout
+	    android:id="@+id/shezhi_background" 
+	    android:layout_height="320dp"
+	    android:layout_width="320dp"
+	    android:layout_gravity="bottom|center_horizontal"
+	    android:layout_marginBottom="50dp"
+	    android:orientation="vertical"
+	    android:gravity="center"
+	    android:visibility="gone"
+	    >
+		<Button
+		    android:id="@+id/moshi_4x4jd"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="@string/moshi_4x4jd"
+		    android:textSize="35sp"
+		    android:textColor="@color/shuzi_24"
+		    android:layout_marginBottom="20dp"
+		    android:background="@null" />
+		<Button
+		    android:id="@+id/moshi_5x5jd"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="@string/moshi_5x5jd"
+		    android:textSize="35sp"
+		    android:textColor="@color/shuzi_24"
+		    android:background="@null" />
+	</LinearLayout>
+	<LinearLayout
+	    android:id="@+id/main_i_background" 
+	    android:layout_height="320dp"
+	    android:layout_width="320dp"
+	    android:layout_gravity="bottom|center_horizontal"
+	    android:layout_marginBottom="50dp"
+	    android:orientation="vertical"
+	    android:gravity="center"
+	    android:visibility="gone"
+	    >
+		<TextView 
+		    android:layout_height="wrap_content"
+		    android:layout_width="wrap_content"
+		    android:text="@string/youxiang"/>
+		<TextView 
+		    android:layout_height="wrap_content"
+		    android:layout_width="wrap_content"
+		    android:text="@string/yuanma"/>
+	</LinearLayout>
+</FrameLayout>
